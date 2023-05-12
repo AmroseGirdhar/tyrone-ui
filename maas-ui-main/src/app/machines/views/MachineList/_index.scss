@@ -1,0 +1,177 @@
+@mixin MachineList {
+  $box-size: 1rem;
+  $checkbox-offset: 0.1875rem; // Offset checkbox to prevent focus outline truncation
+  $grouped-machines-indentation: $box-size + $sph--large - $checkbox-offset; // Checkbox + label - offset
+  $item-active-background: #dbedff;
+
+  .machine-list {
+    @include truncated-border($width: $grouped-machines-indentation);
+    margin-bottom: 0;
+
+    .fqdn-col {
+      @include breakpoint-widths(45%, 35%, 26%, 24%, 20%);
+    }
+
+    .power-col {
+      @include breakpoint-widths(25%, 17%, 14%, 12%, 10%);
+    }
+
+    .status-col {
+      @include breakpoint-widths(30%, 28%, 18%, 18%, 15%);
+    }
+
+    .owner-col {
+      @include breakpoint-widths(0, 20%, 8%, 9%, 9%);
+    }
+
+    .pool-col {
+      @include breakpoint-widths(0, 0, 0, 0, 7%);
+    }
+
+    .zone-col {
+      @include breakpoint-widths(0, 0, 0, 9%, 7%);
+    }
+
+    .fabric-col {
+      @include breakpoint-widths(0, 0, 0, 0, 7%);
+    }
+
+    .cores-col {
+      @include breakpoint-widths(0, 0, 8%, 6%, 6%);
+    }
+
+    .ram-col {
+      @include breakpoint-widths(0, 0, 9%, 8%, 7%);
+    }
+
+    .disks-col {
+      @include breakpoint-widths(0, 0, 8%, 6%, 6%);
+    }
+
+    .storage-col {
+      @include breakpoint-widths(0, 0, 9%, 8%, 6%);
+    }
+  }
+
+  .machine-list--grouped .machine-list__machine {
+    position: relative;
+    transform: scale(1);
+
+    td:first-child {
+      padding-left: $grouped-machines-indentation;
+    }
+  }
+
+  .machine-list--loading .u-truncate {
+    // When loading the skeleton placeholders should get cut off and not show an ellipsis.
+    text-overflow: clip !important;
+  }
+
+  .machine-list__machine .p-table-menu {
+    display: none;
+  }
+
+  .machine-list__machine:last-child td {
+    // Force the cells in the last row to calculate their height.
+    // See: https://github.com/canonical/maas-ui/issues/935
+    min-height: 1px;
+  }
+
+  .machine-list__machine:focus-within,
+  .machine-list__machine:hover:not(.machine-list__machine--inactive),
+  .machine-list__machine--active {
+    background-color: $item-active-background;
+
+    .p-table-menu {
+      display: block;
+
+      .p-table-menu__toggle {
+        opacity: 0.25;
+      }
+    }
+
+    .p-table-menu .p-table-menu__toggle:focus,
+    .p-table-menu .p-table-menu__toggle:active,
+    td:hover .p-table-menu .p-table-menu__toggle {
+      opacity: 1;
+    }
+  }
+
+  .machine-list__group td {
+    position: relative;
+  }
+
+  .machine-list__group-toggle {
+    position: absolute;
+    top: 0;
+    right: 0;
+    align-items: center;
+    display: flex;
+    height: 3rem;
+    justify-content: flex-end;
+  }
+
+  .p-tooltip__message .p-list::after {
+    white-space: normal;
+  }
+
+  .u-nudge--checkbox {
+    padding-left: $checkbox-offset;
+  }
+
+  .u-nudge--primary-row {
+    padding-left: $box-size + $sph--large + $checkbox-offset;
+  }
+
+  .u-nudge--secondary-row {
+    padding-left: $box-size + $sph--large + $checkbox-offset;
+  }
+
+  .machine-list--inline-input .p-form__control,
+  .machine-list--inline-input {
+    display: inline;
+  }
+
+  .section-header__main-row {
+    .section-header__buttons {
+      display: flex;
+      align-items: flex-start;
+      flex-wrap: wrap;
+      grid-gap: 0.5rem;
+
+      @media screen and (max-width: ($breakpoint-node-action-menu-group - 1)) {
+        .p-node-action-menu-group,
+        .p-add-hardware-dropdown {
+          display: none;
+        }
+      }
+
+      @media screen and (min-width: $breakpoint-node-action-menu-group) {
+        .p-action-menu {
+          display: none;
+        }
+      }
+
+      .p-contextual-menu__toggle {
+        margin-bottom: 0;
+      }
+    }
+  }
+
+  .hidden-columns-select-wrapper {
+    padding: $sph--small $sph--large;
+  }
+
+  [class^="p-button"].has-icon.hidden-columns-toggle {
+    @extend %vf-input-elements;
+    padding-left: $spv--small;
+    text-align: left;
+    width: 100%;
+    margin-bottom: 0;
+
+    i[class*="p-icon"]:last-child {
+      margin-left: 0;
+      margin-right: $spv--x-small;
+    }
+  }
+}

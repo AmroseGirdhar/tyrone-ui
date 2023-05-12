@@ -1,0 +1,8 @@
+@mixin ColumnToggle {
+  .column-toggle {
+    align-items: center;
+    color: $color-dark;
+    text-align: left;
+    width: 100%;
+  }
+}

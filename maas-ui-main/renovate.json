@@ -1,0 +1,22 @@
+{
+  "extends": ["config:base", "group:allNonMajor", "schedule:weekly"],
+  "labels": ["Maintenance 🔨"],
+  "packageRules": [
+    {
+      "groupName": "internal dependencies",
+      "groupSlug": "internal",
+      "matchPackagePatterns": [
+        "^@canonical",
+        "^canonicalwebteam",
+        "^vanilla-framework",
+        "^jquery",
+        "^prettier"
+      ],
+      "schedule": ["at any time"]
+    },
+    {
+      "matchPackagePatterns": ["^@sentry"],
+      "enabled": false
+    }
+  ]
+}

@@ -1,0 +1,60 @@
+@mixin maas-application {
+  .l-main {
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    @media (min-width: $breakpoint-small) {
+      flex-direction: row;
+    }
+    .l-main__nav {
+      flex-shrink: 0;
+      overflow-y: auto;
+      height: 30%;
+
+      @media (min-width: $breakpoint-small) {
+        height: calc(100vh - 2.5rem);
+      }
+    }
+    .l-main__content {
+      width: 100%;
+      overflow-y: auto;
+    }
+  }
+  .l-aside {
+    z-index: $side-panel-z-index;
+    // TODO: remove .l-aside visibility workaround once https://github.com/canonical/vanilla-framework/issues/4629 is fixed
+    @include vf-transition(
+      $property: #{transform,
+      box-shadow,
+      visibility},
+      $duration: snap
+    );
+    background-color: $color-x-light;
+  }
+  // TODO: remove .l-aside visibility workaround once https://github.com/canonical/vanilla-framework/issues/4629 is fixed
+  .l-aside.is-collapsed {
+    visibility: hidden;
+  }
+  .l-navigation-bar.is-pinned {
+    width: 100%;
+    display: block;
+    visibility: visible;
+    grid-area: navbar;
+    height: 3.5rem;
+  }
+  .l-aside .formik-form-buttons {
+    padding: $spv--small $spv--small;
+    flex-direction: column;
+
+    .formik-form-buttons__container {
+      width: 100%;
+    }
+
+    .formik-form-buttons__help {
+      @extend %vf-grid-container-padding;
+      padding-right: unset;
+      padding-left: unset;
+      width: 100%;
+    }
+  }
+}

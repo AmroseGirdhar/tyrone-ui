@@ -1,0 +1,430 @@
+import { mount } from "enzyme";
+import { Provider } from "react-redux";
+import configureStore from "redux-mock-store";
+
+import NetworkTableActions from "./NetworkTableActions";
+
+import { ExpandedState } from "app/base/components/NodeNetworkTab/NodeNetworkTab";
+import type { MachineDetails } from "app/store/machine/types";
+import type { RootState } from "app/store/root/types";
+import { NetworkInterfaceTypes, NetworkLinkMode } from "app/store/types/enum";
+import type { NetworkInterface } from "app/store/types/node";
+import { NodeStatus } from "app/store/types/node";
+import {
+  fabric as fabricFactory,
+  machineDetails as machineDetailsFactory,
+  machineState as machineStateFactory,
+  machineInterface as machineInterfaceFactory,
+  networkLink as networkLinkFactory,
+  rootState as rootStateFactory,
+  vlan as vlanFactory,
+} from "testing/factories";
+
+const mockStore = configureStore();
+
+describe("NetworkTableActions", () => {
+  let nic: NetworkInterface;
+  let state: RootState;
+  beforeEach(() => {
+    nic = machineInterfaceFactory();
+    state = rootStateFactory({
+      machine: machineStateFactory({
+        items: [
+          machineDetailsFactory({
+            interfaces: [nic],
+            system_id: "abc123",
+          }),
+        ] as MachineDetails[],
+        loaded: true,
+      }),
+    });
+  });
+
+  it("can display the menu", () => {
+    const store = mockStore(state);
+    const wrapper = mount(
+      <Provider store={store}>
+        <NetworkTableActions
+          nic={nic}
+          setExpanded={jest.fn()}
+          systemId="abc123"
+        />
+      </Provider>
+    );
+    expect(wrapper.find("TableMenu").exists()).toBe(true);
+    expect(wrapper.find("TableMenu").prop("disabled")).toBe(false);
+  });
+
+  it("disables menu when networking is disabled and limited editing is not allowed", () => {
+    state.machine.items[0].permissions = [];
+    state.machine.items[0].status = NodeStatus.NEW;
+    nic.type = NetworkInterfaceTypes.VLAN;
+    const store = mockStore(state);
+    const wrapper = mount(
+      <Provider store={store}>
+        <NetworkTableActions
+          nic={nic}
+          setExpanded={jest.fn()}
+          systemId="abc123"
+        />
+      </Provider>
+    );
+    expect(wrapper.find("TableMenu").prop("disabled")).toBe(true);
+  });
+
+  it("can display an item to mark an interface as connected", () => {
+    nic.type = NetworkInterfaceTypes.PHYSICAL;
+    nic.link_connected = false;
+    const store = mockStore(state);
+    const wrapper = mount(
+      <Provider store={store}>
+        <NetworkTableActions
+          nic={nic}
+          setExpanded={jest.fn()}
+          systemId="abc123"
+        />
+      </Provider>
+    );
+    // Open the menu:
+    wrapper.find("Button.p-contextual-menu__toggle").simulate("click");
+    wrapper.update();
+    expect(
+      wrapper
+        .findWhere(
+          (n) =>
+            n.type() === "button" &&
+            n.hasClass("p-contextual-menu__link") &&
+            n.text() === "Mark as connected"
+        )
+        .exists()
+    ).toBe(true);
+  });
+
+  it("can display an item to mark an interface as disconnected", () => {
+    nic.type = NetworkInterfaceTypes.PHYSICAL;
+    nic.link_connected = true;
+    const store = mockStore(state);
+    const wrapper = mount(
+      <Provider store={store}>
+        <NetworkTableActions
+          nic={nic}
+          setExpanded={jest.fn()}
+          systemId="abc123"
+        />
+      </Provider>
+    );
+    // Open the menu:
+    wrapper.find("Button.p-contextual-menu__toggle").simulate("click");
+    wrapper.update();
+    expect(
+      wrapper
+        .findWhere(
+          (n) =>
+            n.type() === "button" &&
+            n.hasClass("p-contextual-menu__link") &&
+            n.text() === "Mark as disconnected"
+        )
+        .exists()
+    ).toBe(true);
+  });
+
+  it("does not display an item to mark an alias as connected", () => {
+    nic.type = NetworkInterfaceTypes.PHYSICAL;
+    nic.link_connected = false;
+    const link = networkLinkFactory();
+    nic.links = [networkLinkFactory(), link];
+    const store = mockStore(state);
+    const wrapper = mount(
+      <Provider store={store}>
+        <NetworkTableActions
+          link={link}
+          nic={nic}
+          setExpanded={jest.fn()}
+          systemId="abc123"
+        />
+      </Provider>
+    );
+    // Open the menu:
+    wrapper.find("Button.p-contextual-menu__toggle").simulate("click");
+    wrapper.update();
+    expect(
+      wrapper
+        .findWhere(
+          (n) =>
+            n.type() === "button" &&
+            n.hasClass("p-contextual-menu__link") &&
+            n.text() === "Mark as connected"
+        )
+        .exists()
+    ).toBe(false);
+  });
+
+  it("does not display an item to mark an alias as disconnected", () => {
+    nic.type = NetworkInterfaceTypes.PHYSICAL;
+    nic.link_connected = true;
+    const link = networkLinkFactory();
+    nic.links = [networkLinkFactory(), link];
+    const store = mockStore(state);
+    const wrapper = mount(
+      <Provider store={store}>
+        <NetworkTableActions
+          link={link}
+          nic={nic}
+          setExpanded={jest.fn()}
+          systemId="abc123"
+        />
+      </Provider>
+    );
+    // Open the menu:
+    wrapper.find("Button.p-contextual-menu__toggle").simulate("click");
+    wrapper.update();
+    expect(
+      wrapper
+        .findWhere(
+          (n) =>
+            n.type() === "button" &&
+            n.hasClass("p-contextual-menu__link") &&
+            n.text() === "Mark as disconnected"
+        )
+        .exists()
+    ).toBe(false);
+  });
+
+  it("can display an item to remove the interface", () => {
+    nic.type = NetworkInterfaceTypes.BOND;
+    const store = mockStore(state);
+    const wrapper = mount(
+      <Provider store={store}>
+        <NetworkTableActions
+          nic={nic}
+          setExpanded={jest.fn()}
+          systemId="abc123"
+        />
+      </Provider>
+    );
+    // Open the menu:
+    wrapper.find("Button.p-contextual-menu__toggle").simulate("click");
+    wrapper.update();
+    expect(
+      wrapper
+        .findWhere(
+          (n) =>
+            n.type() === "button" &&
+            n.hasClass("p-contextual-menu__link") &&
+            n.text() === "Remove Bond..."
+        )
+        .exists()
+    ).toBe(true);
+  });
+
+  it("can display an item to edit the interface", () => {
+    nic.type = NetworkInterfaceTypes.BOND;
+    const setExpanded = jest.fn();
+    const store = mockStore(state);
+    const wrapper = mount(
+      <Provider store={store}>
+        <NetworkTableActions
+          nic={nic}
+          setExpanded={setExpanded}
+          systemId="abc123"
+        />
+      </Provider>
+    );
+    // Open the menu:
+    wrapper.find("Button.p-contextual-menu__toggle").simulate("click");
+    wrapper.update();
+    const item = wrapper.findWhere(
+      (n) =>
+        n.type() === "button" &&
+        n.hasClass("p-contextual-menu__link") &&
+        n.text() === "Edit Bond"
+    );
+    expect(item.exists()).toBe(true);
+    item.simulate("click");
+    expect(setExpanded).toHaveBeenCalledWith({
+      content: ExpandedState.EDIT,
+      nicId: nic.id,
+    });
+  });
+
+  it("can display a warning when trying to edit a disconnected interface", () => {
+    nic.type = NetworkInterfaceTypes.PHYSICAL;
+    nic.link_connected = false;
+    const setExpanded = jest.fn();
+    const store = mockStore(state);
+    const wrapper = mount(
+      <Provider store={store}>
+        <NetworkTableActions
+          nic={nic}
+          setExpanded={setExpanded}
+          systemId="abc123"
+        />
+      </Provider>
+    );
+    // Open the menu:
+    wrapper.find("Button.p-contextual-menu__toggle").simulate("click");
+    wrapper.update();
+    const item = wrapper.findWhere(
+      (n) =>
+        n.type() === "button" &&
+        n.hasClass("p-contextual-menu__link") &&
+        n.text() === "Edit Physical"
+    );
+    expect(item.exists()).toBe(true);
+    item.simulate("click");
+    expect(setExpanded).toHaveBeenCalledWith({
+      content: ExpandedState.DISCONNECTED_WARNING,
+      nicId: nic.id,
+    });
+  });
+
+  it("can display an action to add an alias", () => {
+    nic.type = NetworkInterfaceTypes.PHYSICAL;
+    nic.links = [networkLinkFactory()];
+    const store = mockStore(state);
+    const wrapper = mount(
+      <Provider store={store}>
+        <NetworkTableActions
+          nic={nic}
+          setExpanded={jest.fn()}
+          systemId="abc123"
+        />
+      </Provider>
+    );
+    // Open the menu:
+    wrapper.find("Button.p-contextual-menu__toggle").simulate("click");
+    wrapper.update();
+    const addAlias = wrapper.findWhere(
+      (n) =>
+        n.type() === "button" &&
+        n.hasClass("p-contextual-menu__link") &&
+        n.text() === "Add alias"
+    );
+    expect(addAlias.exists()).toBe(true);
+    expect(addAlias.prop("disabled")).toBe(false);
+    expect(addAlias.find("Tooltip").exists()).toBe(false);
+  });
+
+  it("can display a disabled action to add an alias", () => {
+    nic.type = NetworkInterfaceTypes.PHYSICAL;
+    nic.links = [networkLinkFactory({ mode: NetworkLinkMode.LINK_UP })];
+    const store = mockStore(state);
+    const wrapper = mount(
+      <Provider store={store}>
+        <NetworkTableActions
+          nic={nic}
+          setExpanded={jest.fn()}
+          systemId="abc123"
+        />
+      </Provider>
+    );
+    // Open the menu:
+    wrapper.find("Button.p-contextual-menu__toggle").simulate("click");
+    wrapper.update();
+    const addAlias = wrapper.findWhere(
+      (n) =>
+        n.type() === "button" &&
+        n.hasClass("p-contextual-menu__link") &&
+        n.text() === "Add alias"
+    );
+    expect(addAlias.exists()).toBe(true);
+    expect(addAlias.prop("disabled")).toBe(true);
+    expect(addAlias.find("Tooltip").exists()).toBe(true);
+  });
+
+  it("can display an action to add a VLAN", () => {
+    nic.type = NetworkInterfaceTypes.PHYSICAL;
+    const fabric = fabricFactory();
+    state.fabric.items = [fabric];
+    const vlan = vlanFactory({ fabric: fabric.id });
+    state.vlan.items = [vlan];
+    nic.vlan_id = vlan.id;
+    const store = mockStore(state);
+    const wrapper = mount(
+      <Provider store={store}>
+        <NetworkTableActions
+          nic={nic}
+          setExpanded={jest.fn()}
+          systemId="abc123"
+        />
+      </Provider>
+    );
+    // Open the menu:
+    wrapper.find("Button.p-contextual-menu__toggle").simulate("click");
+    wrapper.update();
+    const addVLAN = wrapper.findWhere(
+      (n) =>
+        n.type() === "button" &&
+        n.hasClass("p-contextual-menu__link") &&
+        n.text() === "Add VLAN"
+    );
+    expect(addVLAN.exists()).toBe(true);
+    expect(addVLAN.prop("disabled")).toBe(false);
+    expect(addVLAN.find("Tooltip").exists()).toBe(false);
+  });
+
+  it("can display a disabled action to add a VLAN", () => {
+    nic.type = NetworkInterfaceTypes.PHYSICAL;
+    state.vlan.items = [];
+    const store = mockStore(state);
+    const wrapper = mount(
+      <Provider store={store}>
+        <NetworkTableActions
+          nic={nic}
+          setExpanded={jest.fn()}
+          systemId="abc123"
+        />
+      </Provider>
+    );
+    // Open the menu:
+    wrapper.find("Button.p-contextual-menu__toggle").simulate("click");
+    wrapper.update();
+    const addVLAN = wrapper.findWhere(
+      (n) =>
+        n.type() === "button" &&
+        n.hasClass("p-contextual-menu__link") &&
+        n.text() === "Add VLAN"
+    );
+    expect(addVLAN.exists()).toBe(true);
+    expect(addVLAN.prop("disabled")).toBe(true);
+    expect(addVLAN.find("Tooltip").exists()).toBe(true);
+  });
+
+  it("can not display an action to add an alias or vlan", () => {
+    state.machine.items[0].permissions = [];
+    state.machine.items[0].status = NodeStatus.NEW;
+    const store = mockStore(state);
+    const wrapper = mount(
+      <Provider store={store}>
+        <NetworkTableActions
+          nic={nic}
+          setExpanded={jest.fn()}
+          systemId="abc123"
+        />
+      </Provider>
+    );
+    // Open the menu:
+    wrapper.find("Button.p-contextual-menu__toggle").simulate("click");
+    wrapper.update();
+    expect(
+      wrapper
+        .findWhere(
+          (n) =>
+            n.type() === "button" &&
+            n.hasClass("p-contextual-menu__link") &&
+            n.text() === "Add alias"
+        )
+        .exists()
+    ).toBe(false);
+    expect(
+      wrapper
+        .findWhere(
+          (n) =>
+            n.type() === "button" &&
+            n.hasClass("p-contextual-menu__link") &&
+            n.text() === "Add VLAN"
+        )
+        .exists()
+    ).toBe(false);
+  });
+});

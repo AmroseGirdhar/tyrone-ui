@@ -1,0 +1,23 @@
+@mixin maas-links {
+  // Keep normal link colour even when visited
+  a:visited {
+    color: $color-link;
+
+    // Keep contextual menu link color even when visited
+    &.p-contextual-menu__link {
+      color: $color-dark;
+    }
+  }
+
+  // Make skip link work with the custom MAAS layout
+  .p-link--skip:focus {
+    position: absolute;
+    background-color: $color-x-light;
+    padding: $sph--large;
+  }
+
+  // TODO: remove once https://github.com/canonical/vanilla-framework/issues/4368 is released
+  a.is-on-dark {
+    color: #3097ff;
+  }
+}

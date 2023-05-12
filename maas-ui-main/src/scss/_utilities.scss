@@ -1,0 +1,265 @@
+@mixin maas-utilities {
+  %display-flex {
+    display: flex !important;
+  }
+
+  // Vertically align checkboxes in double row table headers
+  .u-align-header-checkbox {
+    top: -$form-tick-box-nudge !important;
+  }
+
+  // Align non-form fields with form fields on larger viewports
+  .u-align-non-field {
+    @media only screen and (min-width: $breakpoint-small) {
+      padding-top: $sp-unit * 1.75 !important;
+    }
+  }
+
+  .u-auto-min-width {
+    min-width: auto !important;
+  }
+
+  .u-break-spaces {
+    white-space: break-spaces !important;
+  }
+
+  .u-break-word {
+    word-break: break-word !important;
+  }
+
+  .u-default-text {
+    color: $color-dark !important;
+    font-size: 1rem !important;
+    font-weight: 300 !important;
+    text-transform: none !important;
+  }
+
+  .u-display--block {
+    display: block !important;
+  }
+
+  .u-display--inline {
+    display: inline !important;
+  }
+
+  .u-display--inline-block {
+    display: inline-block !important;
+  }
+
+  .u-flex {
+    @extend %display-flex;
+  }
+
+  .u-flex--align-baseline {
+    @extend %display-flex;
+    align-items: baseline !important;
+  }
+
+  .u-flex--align-center {
+    @extend %display-flex;
+    align-items: center !important;
+  }
+
+  .u-flex--align-end {
+    @extend %display-flex;
+    align-items: flex-end !important;
+  }
+
+  .u-flex--between {
+    @extend %display-flex;
+    justify-content: space-between !important;
+  }
+
+  .u-flex--center {
+    @extend %display-flex;
+    justify-content: center !important;
+  }
+
+  .u-flex--column-align-end {
+    @extend %display-flex;
+    align-items: flex-end !important;
+    flex-direction: column !important;
+  }
+
+  .u-flex--column-x-small {
+    @extend %display-flex;
+    @media only screen and (max-width: $breakpoint-x-small) {
+      flex-direction: column;
+    }
+  }
+
+  .u-flex--end {
+    @extend %display-flex;
+    justify-content: flex-end !important;
+  }
+
+  .u-flex--grow {
+    flex-grow: 1;
+  }
+
+  .u-flex--no-shrink {
+    flex-shrink: 0;
+  }
+
+  .u-flex--vertically {
+    @extend %display-flex;
+    flex-direction: column !important;
+    justify-content: space-between !important;
+  }
+
+  .u-flex--wrap {
+    @extend %display-flex;
+    flex-wrap: wrap !important;
+  }
+
+  .u-no-border {
+    border: 0 !important;
+  }
+
+  .u-no-border--top {
+    border-top: 0 !important;
+  }
+
+  .u-no-text-transform {
+    text-transform: none !important;
+  }
+
+  .u-no-wrap {
+    white-space: nowrap !important;
+  }
+
+  .u-nudge-down {
+    padding-top: $sph--large !important;
+  }
+
+  .u-nudge-down--small {
+    padding-top: $sph--small !important;
+  }
+
+  .u-nudge-down--x-small {
+    padding-top: $sp-x-small !important;
+  }
+
+  .u-nudge-left--x-large {
+    padding-right: $sph--large * 2 !important;
+  }
+
+  .u-nudge-left--large {
+    padding-right: $sph--large !important;
+  }
+
+  .u-nudge-left {
+    padding-right: $sph--large !important;
+  }
+
+  .u-nudge-left--small {
+    padding-right: $sph--small !important;
+  }
+
+  .u-nudge-left--x-small {
+    padding-right: $sp-x-small !important;
+  }
+
+  .u-nudge-right--x-large {
+    padding-left: $sph--large * 2 !important;
+  }
+
+  .u-nudge-right--large {
+    padding-left: $sph--large !important;
+  }
+
+  .u-nudge-right {
+    padding-left: $sph--large !important;
+  }
+
+  .u-nudge-right--small {
+    padding-left: $sph--small !important;
+  }
+
+  .u-nudge-right--x-small {
+    padding-left: $sp-x-small !important;
+  }
+
+  .u-nudge-up--x-small {
+    margin-top: -$sp-x-small !important;
+  }
+
+  .u-padding-top--medium {
+    padding-top: $spv--medium !important;
+  }
+
+  .u-position--relative {
+    position: relative !important;
+  }
+
+  .u-rotate-left {
+    transform: rotate(-90deg) !important;
+  }
+
+  .u-rotate-right {
+    transform: rotate(90deg) !important;
+  }
+
+  .u-text--default-size {
+    font-size: map-get($base-font-sizes, base) !important;
+    font-weight: $font-weight-regular-text !important;
+  }
+
+  .u-text--light {
+    color: $color-mid-dark !important;
+  }
+
+  .u-upper-case--first:first-letter {
+    text-transform: capitalize !important;
+  }
+
+  .u-text--monospace {
+    font-family: unquote($font-monospace) !important;
+  }
+
+  .u-no-line-height {
+    line-height: 0 !important;
+  }
+
+  .u-visually-hidden:not(:focus):not(:active) {
+    clip: rect(0 0 0 0);
+    clip-path: inset(50%);
+    height: 1px;
+    overflow: hidden;
+    position: absolute;
+    white-space: nowrap;
+    width: 1px;
+  }
+
+  .u-width--auto {
+    width: auto !important;
+  }
+
+  .u-width--full {
+    width: 100% !important;
+  }
+
+  $nav-theme-colors: (
+    "default": $colors--dark-theme--background-default,
+    "bark": #585841,
+    "sage": #4e5f51,
+    "olive": #3d5f11,
+    "viridian": #025a3d,
+    "prussian_green": #225d5c,
+    "blue": #0060bf,
+    "purple": #7764d8,
+    "magenta": #974097,
+    "red": #a71b33,
+  );
+  @each $name, $color in $nav-theme-colors {
+    .is-maas-#{$name} {
+      background-color: $color !important;
+    }
+  }
+
+  @each $name, $color in $nav-theme-colors {
+    .is-maas-#{$name}--accent {
+      background-color: lighten($color, 5%) !important;
+    }
+  }
+}

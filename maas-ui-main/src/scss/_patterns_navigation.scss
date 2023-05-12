@@ -1,0 +1,22 @@
+//Local overrides to the navigation pattern
+@mixin maas-navigation {
+  $breakpoint-hardware-menu: 1200px;
+
+  .p-navigation {
+    @include vf-animation('background-color');
+  }
+
+  .p-navigation__hardware-menu {
+    display: none;
+
+    @media (min-width: $breakpoint-navigation-threshold) and (max-width: $breakpoint-hardware-menu) {
+      display: inherit;
+    }
+  }
+
+  .u-hide--hardware-menu-threshold {
+    @media (min-width: $breakpoint-navigation-threshold) and (max-width: $breakpoint-hardware-menu) {
+      display: none;
+    }
+  }
+}
